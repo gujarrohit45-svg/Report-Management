@@ -26,189 +26,180 @@
     <form id="actuator-form" method="post" class="mb-8">
         {% csrf_token %}
         <h3 class="text-2xl font-semibold mb-4">Actuator Data</h3>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
             <div>
-                <label for="sales_order_no" class="block text-sm font-medium text-gray-700">Sales Order No</label>
-                <input type="text" id="sales_order_no" name="sales_order_no" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
-            </div>
-            <div>
-                <label for="line_item" class="block text-sm font-medium text-gray-700">Line Item</label>
-                <input type="text" id="line_item" name="line_item" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
-            </div>
-            <div>
-                <label for="order_no" class="block text-sm font-medium text-gray-700">Order No</label>
-                <input type="text" id="order_no" name="order_no" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
-            </div>
-            <div>
-                <label for="customer" class="block text-sm font-medium text-gray-700">Customer</label>
-                <input type="text" id="customer" name="customer" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Sales Order No</label>
+                <input id="sales_order_no" name="sales_order_no" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
 
             <div>
-                <label for="series" class="block text-sm font-medium text-gray-700">Series</label>
-                <input type="text" id="series" name="series" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Line Item</label>
+                <input id="line_item" name="line_item" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                <input type="text" id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Order No</label>
+                <input id="order_no" name="order_no" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="size" class="block text-sm font-medium text-gray-700">Size</label>
-                <input type="text" id="size" name="size" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Customer</label>
+                <input id="customer" name="customer" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="cylinder_size" class="block text-sm font-medium text-gray-700">Cylinder Size (inch)</label>
-                <input type="text" id="cylinder_size" name="cylinder_size" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Series</label>
+                <input id="series" name="series" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="spring_size" class="block text-sm font-medium text-gray-700">Spring Size</label>
-                <input type="text" id="spring_size" name="spring_size" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Type</label>
+                <input id="type" name="type" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="moc" class="block text-sm font-medium text-gray-700">MOC</label>
-                <input type="text" id="moc" name="moc" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Size</label>
+                <input id="size" name="size" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="item_code" class="block text-sm font-medium text-gray-700">Item Code</label>
-                <input type="text" id="item_code" name="item_code" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Cylinder Size</label>
+                <input id="cylinder_size" name="cylinder_size" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="order_qty" class="block text-sm font-medium text-gray-700">Order Quantity</label>
-                <input type="text" id="order_qty" name="order_qty" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Spring Size</label>
+                <input id="spring_size" name="spring_size" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="creation_date" class="block text-sm font-medium text-gray-700">Creation Date</label>
-                <input type="text" id="creation_date" name="creation_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">MOC</label>
+                <input id="moc" name="moc" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
+
             <div>
-                <label for="branch" class="block text-sm font-medium text-gray-700">Branch</label>
-                <input type="text" id="branch" name="branch" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" readonly>
+                <label class="block text-sm font-medium text-gray-700">Item Code</label>
+                <input id="item_code" name="item_code" readonly class="mt-1 block w-full border-gray-300 rounded-md">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Order Qty</label>
+                <input id="order_qty" name="order_qty" readonly class="mt-1 block w-full border-gray-300 rounded-md">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Creation Date</label>
+                <input id="creation_date" name="creation_date" readonly class="mt-1 block w-full border-gray-300 rounded-md">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Branch</label>
+                <input id="branch" name="branch" readonly class="mt-1 block w-full border-gray-300 rounded-md">
             </div>
         </div>
+
         <input type="hidden" id="actuator_data" name="actuator_data">
-        <button type="submit" id="submit-btn" class="mt-4 bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 disabled:opacity-50" disabled>Save Actuator Data</button>
+        <button disabled id="submit-btn" class="mt-4 bg-green-500 text-white px-6 py-2 rounded opacity-50">Save Actuator Data</button>
     </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const video = document.getElementById('qr-video');
-    const startScanBtn = document.getElementById('start-scan');
-    const stopScanBtn = document.getElementById('stop-scan');
-    const scanStatus = document.getElementById('scan-status');
-    const actuatorForm = document.getElementById('actuator-form');
-    const actuatorDataInput = document.getElementById('actuator_data');
-    const submitBtn = document.getElementById('submit-btn');
+document.addEventListener('DOMContentLoaded', () => {
+
+    const video = document.getElementById("qr-video");
+    const startBtn = document.getElementById("start-scan");
+    const stopBtn = document.getElementById("stop-scan");
+    const status = document.getElementById("scan-status");
+    const actuatorDataInput = document.getElementById("actuator_data");
+    const submitBtn = document.getElementById("submit-btn");
+
     let stream = null;
     let scanning = false;
 
-    startScanBtn.addEventListener('click', startScanning);
-    stopScanBtn.addEventListener('click', stopScanning);
+    startBtn.onclick = startScan;
+    stopBtn.onclick = stopScan;
 
-    function startScanning() {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function(mediaStream) {
-                stream = mediaStream;
-                video.srcObject = stream;
+    function startScan() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(s => {
+                stream = s;
+                video.srcObject = s;
                 video.play();
                 scanning = true;
-                startScanBtn.disabled = true;
-                stopScanBtn.disabled = false;
-                scanStatus.textContent = 'Scanning for QR code...';
-                scanQRCode();
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                status.textContent = "Scanning...";
+                requestAnimationFrame(scanLoop);
             })
-            .catch(function(err) {
-                console.error('Error accessing camera:', err);
-                scanStatus.textContent = 'Error accessing camera. Please check permissions.';
+            .catch(err => {
+                status.textContent = "Camera error. Check permissions.";
+                console.error(err);
             });
     }
 
-    function stopScanning() {
+    function stopScan() {
+        scanning = false;
         if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            stream = null;
+            stream.getTracks().forEach(t => t.stop());
         }
         video.srcObject = null;
-        scanning = false;
-        startScanBtn.disabled = false;
-        stopScanBtn.disabled = true;
-        scanStatus.textContent = 'Scan stopped.';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        status.textContent = "Scan stopped.";
     }
 
-    function scanQRCode() {
+    function scanLoop() {
         if (!scanning) return;
 
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        if (code) {
+        const result = jsQR(imageData.data, canvas.width, canvas.height);
+
+        if (result) {
             try {
-                const data = JSON.parse(code.data);
-                populateForm(data);
+                const data = JSON.parse(result.data);
+                fillForm(data);
                 actuatorDataInput.value = JSON.stringify(data);
                 submitBtn.disabled = false;
-                scanStatus.textContent = 'QR code scanned successfully! Data populated in form.';
-                stopScanning();
-            } catch (e) {
-                scanStatus.textContent = 'QR code detected but invalid JSON data.';
+                submitBtn.classList.remove("opacity-50");
+                status.textContent = "QR scanned & data loaded.";
+                stopScan();
+                return;
+            } catch {
+                status.textContent = "QR detected but JSON invalid.";
             }
-        } else {
-            requestAnimationFrame(scanQRCode);
         }
+
+        requestAnimationFrame(scanLoop);
     }
 
-    // Simulate scan button to use hardcoded data
-    const simulateScanBtn = document.createElement('button');
-    simulateScanBtn.textContent = 'Simulate Scan (Use Hardcoded Data)';
-    simulateScanBtn.className = 'mt-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600';
-    simulateScanBtn.addEventListener('click', function() {
-        const data = {
-                "sr_no": "001",
-                "sales_order_no":"20011793",
-                "order_no": "21002717",
-                "order_qty": "5",
-                "line_item": "30",
-                "series": "25",
-                "type": "DA",
-                "size": "250",
-                "cylinder size": "007",
-                "spring size": "",
-                "moc": "CS",
-                "customer": "Japro Eng",
-                "item_code": "ACT5588",
-                "creation_date": "2025-10-30",
-                "branch": "Pune"
-                }
-        populateForm(data);
-        actuatorDataInput.value = JSON.stringify(data);
-        submitBtn.disabled = false;
-        scanStatus.textContent = 'Simulated scan completed! Data populated in form.';
-    });
-    document.querySelector('.md\\:w-1\\/2').appendChild(simulateScanBtn);
-
-    function populateForm(data) {
-        document.getElementById('order_no').value = data.order_no || '';
-        document.getElementById('sales_order_no').value = data.sales_order_no || '';
-        document.getElementById('order_qty').value = data.order_qty || '';
-        document.getElementById('line_item').value = data.line_item || '';
-        document.getElementById('series').value = data.series || '';
-        document.getElementById('type').value = data.type || '';
-        document.getElementById('size').value = data.size || '';
-        document.getElementById('cylinder_size').value = data['cylinder size'] || '';
-        document.getElementById('spring_size').value = data['spring size'] || '';
-        document.getElementById('moc').value = data.moc || '';
-        document.getElementById('customer').value = data.customer || '';
-        document.getElementById('item_code').value = data.item_code || '';
-        document.getElementById('creation_date').value = data.creation_date || '';
-        document.getElementById('branch').value = data.branch || '';
+    function fillForm(d) {
+        document.getElementById("sales_order_no").value = d.sales_order_no || "";
+        document.getElementById("order_no").value = d.order_no || "";
+        document.getElementById("order_qty").value = d.order_qty || "";
+        document.getElementById("line_item").value = d.line_item || "";
+        document.getElementById("series").value = d.series || "";
+        document.getElementById("type").value = d.type || "";
+        document.getElementById("size").value = d.size || "";
+        document.getElementById("cylinder_size").value = d.cylinder_size || d["cylinder size"] || "";
+        document.getElementById("spring_size").value = d.spring_size || d["spring size"] || "";
+        document.getElementById("moc").value = d.moc || "";
+        document.getElementById("customer").value = d.customer || "";
+        document.getElementById("item_code").value = d.item_code || "";
+        document.getElementById("creation_date").value = d.creation_date || "";
+        document.getElementById("branch").value = d.branch || "";
     }
 });
 </script>
+
 {% endblock %}
