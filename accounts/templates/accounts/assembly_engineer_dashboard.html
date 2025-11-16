@@ -105,11 +105,10 @@
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://unpkg.com/qr-scanner/qr-scanner.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-
+document.addEventListener("DOMContentLoaded", () => {
     const video = document.getElementById("qr-video");
     const startBtn = document.getElementById("start-scan");
     const stopBtn = document.getElementById("stop-scan");
@@ -117,89 +116,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const actuatorDataInput = document.getElementById("actuator_data");
     const submitBtn = document.getElementById("submit-btn");
 
-    let stream = null;
-    let scanning = false;
+    let qrScanner = null;
 
-    startBtn.onclick = startScan;
-    stopBtn.onclick = stopScan;
+    startBtn.onclick = async () => {
+        status.textContent = "Starting camera...";
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
 
-    function startScan() {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(s => {
-                stream = s;
-                video.srcObject = s;
-                video.play();
-                scanning = true;
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-                status.textContent = "Scanning...";
-                requestAnimationFrame(scanLoop);
-            })
-            .catch(err => {
-                status.textContent = "Camera error. Check permissions.";
-                console.error(err);
-            });
-    }
+        qrScanner = new QrScanner(
+            video,
+            (result) => {
+                try {
+                    const data = JSON.parse(result);
+                    fillForm(data);
+                    actuatorDataInput.value = JSON.stringify(data);
 
-    function stopScan() {
-        scanning = false;
-        if (stream) {
-            stream.getTracks().forEach(t => t.stop());
-        }
-        video.srcObject = null;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove("opacity-50");
+                    status.textContent = "QR scanned successfully!";
+                    qrScanner.stop();
+                } catch (e) {
+                    status.textContent = "Invalid JSON QR.";
+                }
+            },
+            {
+                preferredCamera: "environment",
+                returnDetailedScanResult: true,
+            }
+        );
+
+        await qrScanner.start();
+        status.textContent = "Scanning...";
+    };
+
+    stopBtn.onclick = () => {
+        if (qrScanner) qrScanner.stop();
         startBtn.disabled = false;
         stopBtn.disabled = true;
-        status.textContent = "Scan stopped.";
-    }
-
-    function scanLoop() {
-        if (!scanning) return;
-
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-        const result = jsQR(imageData.data, canvas.width, canvas.height);
-
-        if (result) {
-            try {
-                const data = JSON.parse(result.data);
-                fillForm(data);
-                actuatorDataInput.value = JSON.stringify(data);
-                submitBtn.disabled = false;
-                submitBtn.classList.remove("opacity-50");
-                status.textContent = "QR scanned & data loaded.";
-                stopScan();
-                return;
-            } catch {
-                status.textContent = "QR detected but JSON invalid.";
-            }
-        }
-
-        requestAnimationFrame(scanLoop);
-    }
+        status.textContent = "Scanner stopped.";
+    };
 
     function fillForm(d) {
-        document.getElementById("sales_order_no").value = d.sales_order_no || "";
-        document.getElementById("order_no").value = d.order_no || "";
-        document.getElementById("order_qty").value = d.order_qty || "";
-        document.getElementById("line_item").value = d.line_item || "";
-        document.getElementById("series").value = d.series || "";
-        document.getElementById("type").value = d.type || "";
-        document.getElementById("size").value = d.size || "";
-        document.getElementById("cylinder_size").value = d.cylinder_size || d["cylinder size"] || "";
-        document.getElementById("spring_size").value = d.spring_size || d["spring size"] || "";
-        document.getElementById("moc").value = d.moc || "";
-        document.getElementById("customer").value = d.customer || "";
-        document.getElementById("item_code").value = d.item_code || "";
-        document.getElementById("creation_date").value = d.creation_date || "";
-        document.getElementById("branch").value = d.branch || "";
+        const fields = {
+            sales_order_no: d.sales_order_no,
+            order_no: d.order_no,
+            order_qty: d.order_qty,
+            line_item: d.line_item,
+            series: d.series,
+            type: d.type,
+            size: d.size,
+            cylinder_size: d.cylinder_size || d["cylinder size"],
+            spring_size: d.spring_size || d["spring size"],
+            moc: d.moc,
+            customer: d.customer,
+            item_code: d.item_code,
+            creation_date: d.creation_date,
+            branch: d.branch
+        };
+
+        Object.keys(fields).forEach(id => {
+            document.getElementById(id).value = fields[id] || "";
+        });
     }
 });
 </script>
+
 
 {% endblock %}
