@@ -119,9 +119,21 @@ document.addEventListener("DOMContentLoaded", () => {
     let qrScanner = null;
 
     startBtn.onclick = async () => {
-        status.textContent = "Starting camera...";
+        status.textContent = "Requesting camera permission...";
         startBtn.disabled = true;
         stopBtn.disabled = false;
+
+        // ⭐ Force permission popup
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: true });
+        } catch (err) {
+            status.textContent = "Camera permission denied!";
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            return;
+        }
+
+        status.textContent = "Starting camera...";
 
         qrScanner = new QrScanner(
             video,
@@ -140,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             },
             {
-                preferredCamera: "environment",
                 returnDetailedScanResult: true,
             }
         );
