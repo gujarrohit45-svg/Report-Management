@@ -8,6 +8,7 @@ from django.db.models import IntegerField
 from django.db.models.functions import Cast, Substr
 from django.http import HttpResponse
 from datetime import datetime
+import json  # <-- CRITICAL FIX: Added this import
 
 from .models import MainActuator, OrderDetails
 
@@ -69,56 +70,77 @@ def dashboard_view(request):
 # ================================================================
 @login_required
 def assembly_engineer_dashboard(request):
-
-    # Example QR decoded data (replace with actual JSON from POST later)
-    qr_sample_data = {
-        "sr_no": "001",
-        "sales_order_no": "20011793",
-        "order_no": "21002717",
-        "order_qty": "5",
-        "line_item": "30",
-        "series": "25",
-        "type": "DA",
-        "size": "250",
-        "cylinder_size": "007",
-        "spring_size": "",
-        "moc": "CS",
-        "customer": "Japro Eng",
-        "item_code": "ACT5588",
-        "creation_date": "2025-10-30",
-        "branch": "Pune"
-    }
+    """
+    Accepts POSTed JSON in 'actuator_data' (hidden input).
+    The JSON can come from QR scan (scanned payload) or manual entry.
+    """
 
     if request.method == "POST":
-        data = qr_sample_data  # Replace with: data = json.loads(request.POST['qr_json'])
+        # parse posted actuator JSON
+        raw = request.POST.get("actuator_data", "") or request.POST.dict()
+        data = None
+        try:
+            # If actuator_data is a JSON string, parse it
+            if isinstance(raw, str) and raw.strip():
+                data = json.loads(raw)  # <-- This line needs 'import json'
+            elif isinstance(raw, dict):
+                # some browsers may send form dict; try to extract known keys
+                data = {k: v for k, v in raw.items()}
+            else:
+                data = {}
+        except Exception as e:
+            messages.error(request, f"Invalid actuator data JSON: {e}")
+            return redirect("assembly_engineer_dashboard")
 
-        order_no = data["order_no"]
+        # Normalize keys - prefer snake_case keys expected by the form
+        def get(d, *keys):
+            for k in keys:
+                if k in d and d[k] not in (None, ""):
+                    return d[k]
+            return ""
 
+        order_no = get(data, "order_no", "order no", "orderno")
+        sales_order_no = get(data, "sales_order_no", "sales order no", "salesorder")
+        order_qty = get(data, "order_qty", "order qty", "qty", "quantity") or "1"
+
+        if not order_no or not sales_order_no:
+            messages.error(request, "Order No and Sales Order No are required.")
+            return redirect("assembly_engineer_dashboard")
+
+        # duplicate check
         if MainActuator.objects.filter(order_no=order_no).exists():
             messages.error(request, f"Order {order_no} already exists.")
             return redirect("assembly_engineer_dashboard")
 
-        # Create MAIN record
-        actuator = MainActuator.objects.create(
-            sales_order_no=data["sales_order_no"],
-            order_no=order_no,
-            line_item=data["line_item"],
-            order_qty=data["order_qty"],
-            series=data["series"],
-            type=data["type"],
-            size=data["size"],
-            cylinder_size=data["cylinder_size"],
-            spring_size=data["spring_size"],
-            moc=data["moc"],
-            customer=data["customer"],
-            item_code=data["item_code"],
-            creation_date=data["creation_date"],
-            branch=data["branch"],
-            order_status="under_assembly"
-        )
+        # Create MainActuator record (fill missing keys with empty string)
+        try:
+            actuator = MainActuator.objects.create(
+                sales_order_no = sales_order_no,
+                order_no = order_no,
+                line_item = get(data, "line_item", "line item"),
+                order_qty = order_qty,
+                series = get(data, "series"),
+                type = get(data, "type"),
+                size = get(data, "size"),
+                cylinder_size = get(data, "cylinder_size", "cylinder size"),
+                spring_size = get(data, "spring_size", "spring size"),
+                moc = get(data, "moc"),
+                customer = get(data, "customer"),
+                item_code = get(data, "item_code", "item code"),
+                creation_date = get(data, "creation_date"),
+                branch = get(data, "branch"),
+                order_status = "under_assembly"
+            )
+        except Exception as e:
+            messages.error(request, f"Failed to create actuator: {e}")
+            return redirect("assembly_engineer_dashboard")
 
-        # Create child serials
-        qty = int(data["order_qty"])
+        # Create OrderDetails serials
+        try:
+            qty = int(order_qty)
+        except:
+            qty = 1
+
         order_details = [
             OrderDetails(order_no=actuator, actuator_serial_no=f"{order_no}-{i}")
             for i in range(1, qty + 1)
@@ -126,11 +148,10 @@ def assembly_engineer_dashboard(request):
         OrderDetails.objects.bulk_create(order_details)
 
         messages.success(request, f"Added order {order_no} • Created {qty} serial units")
-
         return redirect("assembly_engineer_dashboard")
 
+    # GET: render template
     return render(request, "accounts/assembly_engineer_dashboard.html")
-
 
 
 # ================================================================
