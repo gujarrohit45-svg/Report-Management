@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Name Plate Printer Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold mb-6 text-center">Name Plate Printer Dashboard</h2>
+    <p class="text-lg mb-4">Welcome, {{ user.username }}! You are logged in as a Name Plate Printer.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Printing Jobs</h3>
+            <p>Manage name plate printing orders and schedules.</p>
+        </div>
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Printer Maintenance</h3>
+            <p>Maintain printing equipment and supplies.</p>
+        </div>
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Quality Control</h3>
+            <p>Ensure printing quality and accuracy.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

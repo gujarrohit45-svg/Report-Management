@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Tester Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold mb-6 text-center">Tester Dashboard</h2>
+    <p class="text-lg mb-4">Welcome, {{ user.username }}! You are logged in as a Tester.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Testing Procedures</h3>
+            <p>Execute testing protocols and record results.</p>
+        </div>
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Defect Tracking</h3>
+            <p>Report and track product defects.</p>
+        </div>
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Test Reports</h3>
+            <p>Generate and review test reports.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

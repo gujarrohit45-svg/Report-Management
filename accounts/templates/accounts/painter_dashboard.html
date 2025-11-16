@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Painter Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-3xl font-bold mb-6 text-center">Painter Dashboard</h2>
+    <p class="text-lg mb-4">Welcome, {{ user.username }}! You are logged in as a Painter.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-blue-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Painting Tasks</h3>
+            <p>Perform painting work and track completion.</p>
+        </div>
+        <div class="bg-green-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Safety Protocols</h3>
+            <p>Follow safety guidelines for painting operations.</p>
+        </div>
+        <div class="bg-yellow-100 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">Material Usage</h3>
+            <p>Track paint and material consumption.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
