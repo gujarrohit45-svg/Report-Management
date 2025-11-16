@@ -15,4 +15,10 @@ urlpatterns = [
     path('dashboard/name_plate_printer/', views.name_plate_printer_dashboard, name='name_plate_printer_dashboard'),
     path('dashboard/finisher/', views.finisher_dashboard, name='finisher_dashboard'),
     path('dashboard/qa_engineer/', views.qa_engineer_dashboard, name='qa_engineer_dashboard'),
+   
+path('assembler/', views.assembler_dashboard, name='assembler_dashboard'),
+path('assembler/order/<str:order_no>/', views.assembler_order_details, name='assembler_order_details'),
+path("heat-report/<str:order_no>/", views.generate_heat_report, name="generate_heat_report"),
+
+
 ]

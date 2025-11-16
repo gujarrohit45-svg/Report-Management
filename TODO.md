@@ -1,7 +1,10 @@
-# TODO for Assembler Dashboard - Auto Create OrderDetails
+# TODO for Assembler Dashboard Layout Change
 
-- [x] Run python manage.py migrate (to apply existing migrations)
-- [x] Modify accounts/views.py: Import OrderDetails, update assembly_engineer_dashboard to create OrderDetails after saving MainActuator
-- [x] Update assembler_dashboard view in accounts/views.py to fetch and display OrderDetails
-- [x] Update accounts/templates/accounts/assembler_dashboard.html to display list of OrderDetails
-- [x] Test the functionality by running server and simulating save
+## Tasks
+- [x] Update `accounts/views.py` to fetch MainActuator with annotations for completed_qty and pending_qty, handle selected order, and process POST requests for saving/updating OrderDetails.
+- [x] Update `accounts/templates/accounts/assembler_dashboard.html` to display first table with order details and second table for selected order's OrderDetails with editable fields and action buttons.
+- [ ] Test the dashboard: Load first table, verify calculations, click order_no to show second table, edit and save heat_no fields, submit to change status.
+- [ ] Ensure no errors in console and data persists correctly.
+
+## Progress
+- Updated `accounts/views.py` to fetch MainActuator with annotations and handle POST requests.

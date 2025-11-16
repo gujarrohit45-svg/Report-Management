@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Order - {{ order.order_no }}{% endblock %}
+
+{% block content %}
+
+<div class="max-full mx-auto p-6 bg-white rounded shadow">
+
+    <a href="{% url 'assembler_dashboard' %}"
+       class="inline-block mb-4 text-blue-600 hover:underline">&larr; Back to Dashboard</a>
+
+    <h2 class="text-3xl font-bold mb-4 text-center">HEAT ANNEXTURE for Order {{ order.order_no }}</h2>
+
+    <div class="bg-gray-50 p-4 rounded mb-6">
+        <p><strong>Sales Order:</strong> {{ order.sales_order_no }}</p>
+        <p><strong>Customer:</strong> {{ order.customer }}</p>
+        <p><strong>Material:</strong>
+            {{ order.series }}, {{ order.type }}, {{ order.size }},
+            {{ order.cylinder_size }}, {{ order.spring_size }}, {{ order.moc }}
+        </p>
+        <p><strong>Quantity:</strong> {{ order.order_qty }}</p>
+    </div>
+
+    <div class="overflow-x-auto">   
+    <table class="min-w-full text-sm border border-gray-300 whitespace-nowrap">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-3 border">Sr</th>
+                <th class="p-3 border">Actuator No</th>
+                <th class="p-3 border">Housing</th>
+                <th class="p-3 border">Yoke</th>
+                <th class="p-3 border">Top Cover</th>
+                <th class="p-3 border">DA Side Plate</th>
+                <th class="p-3 border">Spring Side Plate</th>
+                <th class="p-3 border">DA End Plate</th>
+                <th class="p-3 border">Spring End Plate</th>
+                <th class="p-3 border">Assembler Status</th>
+                <th class="p-3 border">Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for a in actuators %}
+            <tr class="hover:bg-gray-50">
+                <td class="p-2 border">{{ forloop.counter }}</td>
+                <td class="p-2 border font-semibold">{{ a.actuator_serial_no }}</td>
+
+                <!-- FORM START -->
+                <td class="p-2 border">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_detail_id" value="{{ a.id }}">
+                        <input type="text" name="housing_heat_no"
+                               class="w-32 border rounded p-1"
+                               value="{{ a.housing_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="yoke_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.yoke_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="top_cover_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.top_cover_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="da_side_adaptor_plate_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.da_side_adaptor_plate_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="spring_side_adaptor_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.spring_side_adaptor_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="da_side_end_plate_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.da_side_end_plate_heat_no }}">
+                </td>
+
+                <td class="p-2 border">
+                    <input type="text" name="spring_side_end_plate_heat_no"
+                           class="w-32 border rounded p-1"
+                           value="{{ a.spring_side_end_plate_heat_no }}">
+                </td>
+
+                <td class="p-2 border text-center">
+                    {% if a.assembler_status == "completed" %}
+                        <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Completed</span>
+                    {% else %}
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Pending</span>
+                    {% endif %}
+                </td>
+
+                <td class="p-2 border text-center">
+                    <button type="submit" name="save"
+                        class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Save</button>
+
+                    <button type="submit" name="submit"
+                        class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 ml-1">
+                        Submit
+                    </button>
+                    </form>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+{% endblock %}

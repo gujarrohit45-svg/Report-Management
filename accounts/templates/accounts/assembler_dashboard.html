@@ -1,68 +1,176 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}Assembler Dashboard{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+<div class="max-w-7xl mx-auto p-6 bg-white rounded shadow">
+
     <h2 class="text-3xl font-bold mb-6 text-center">Assembler Dashboard</h2>
-    <p class="text-lg mb-4">Welcome, {{ user.username }}! You are logged in as an Assembler.</p>
 
-    <!-- List of OrderDetails -->
-    <h3 class="text-2xl font-semibold mb-4">Assigned Actuators</h3>
-    {% if order_details %}
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="py-2 px-4 border-b">Order No</th>
-                        <th class="py-2 px-4 border-b">Actuator Serial No</th>
-                        <th class="py-2 px-4 border-b">Assembler Status</th>
-                        <th class="py-2 px-4 border-b">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for detail in order_details %}
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-2 px-4 border-b">{{ detail.order_no.order_no }}</td>
-                            <td class="py-2 px-4 border-b">{{ detail.actuator_serial_no }}</td>
-                            <td class="py-2 px-4 border-b">
-                                {% if detail.assembler_status == 'pending' %}
-                                    <span class="text-yellow-600">Pending</span>
-                                {% elif detail.assembler_status == 'completed' %}
-                                    <span class="text-green-600">Completed</span>
-                                {% else %}
-                                    <span class="text-gray-600">{{ detail.assembler_status|title }}</span>
-                                {% endif %}
-                            </td>
-                            <td class="py-2 px-4 border-b">
-                                {% if detail.assembler_status != 'completed' %}
-                                    <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Start Assembly</button>
-                                {% else %}
-                                    <span class="text-gray-500">Completed</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p class="text-gray-600">No actuators assigned yet.</p>
-    {% endif %}
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        <div class="bg-blue-100 p-4 rounded-lg">
-            <h3 class="text-xl font-semibold mb-2">Assembly Work</h3>
-            <p>Perform assembly tasks and track progress.</p>
-        </div>
-        <div class="bg-green-100 p-4 rounded-lg">
-            <h3 class="text-xl font-semibold mb-2">Tools & Equipment</h3>
-            <p>Access required tools and equipment.</p>
-        </div>
-        <div class="bg-yellow-100 p-4 rounded-lg">
-            <h3 class="text-xl font-semibold mb-2">Daily Reports</h3>
-            <p>Submit daily assembly reports.</p>
-        </div>
+    <!-- TAB HEADERS -->
+    <div class="mb-6 border-b border-gray-300">
+        <ul class="flex">
+            <li class="-mb-px mr-4">
+                <button data-tab="tab1" class="tab-btn py-2 px-4 font-semibold text-blue-600 border-b-2 border-blue-600">
+                    Under Assembly
+                </button>
+            </li>
+            <li class="mr-4">
+                <button data-tab="tab2" class="tab-btn py-2 px-4 font-semibold text-gray-600 hover:text-blue-600">
+                    Completed Orders
+                </button>
+            </li>
+        </ul>
     </div>
+
+<!-- TAB 1 -->
+<div id="tab1" class="tab-content">
+    <h3 class="text-xl font-bold mb-3">Orders Under Assembly</h3>
+
+    <!-- COLUMN FILTERS -->
+    <div class="grid grid-cols-9 gap-2 mb-3">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="0" placeholder="Sales Order">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="1" placeholder="Line Item">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="2" placeholder="Order No">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="3" placeholder="Customer">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="4" placeholder="Material">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="5" placeholder="Qty">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="6" placeholder="Completed Qty">
+        <input type="text" class="col p-1 border rounded filter-input" data-col="7" placeholder="Pending Qty">
+    </div>
+
+    <!-- TABLE -->
+    <table id="tableUnderAssembly" class="min-w-full text-sm border border-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-3 border">Sales Order</th>
+                <th class="p-3 border">Line Item</th>
+                <th class="p-3 border">Order No</th>
+                <th class="p-3 border">Customer</th>
+                <th class="p-3 border">Material</th>
+                <th class="p-3 border">Qty</th>
+                <th class="p-3 border">Completed Qty</th>
+                <th class="p-3 border">Pending Qty</th>
+                <th class="p-3 border">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in orders_under_assembly %}
+            <tr class="hover:bg-gray-50">
+                <td class="p-3 border">{{ o.sales_order_no }}</td>
+                <td class="p-3 border">{{ o.line_item }}</td>
+
+                <td class="p-3 border text-blue-600 underline">
+                    <a href="{% url 'assembler_order_details' o.order_no %}">
+                        {{ o.order_no }}
+                    </a>
+                </td>
+
+                <td class="p-3 border">{{ o.customer }}</td>
+
+                <td class="p-3 border">
+                    {{ o.series }}, {{ o.type }}, {{ o.size }}, {{ o.cylinder_size }}, {{ o.spring_size }}, {{ o.moc }}
+                </td>
+
+                <td class="p-3 border">{{ o.order_qty }}</td>
+                <td class="p-3 border">{{ o.completed_qty }}</td>
+                <td class="p-3 border">{{ o.pending_qty }}</td>
+
+                <td class="p-3 border">
+                    <a href="{% url 'assembler_order_details' o.order_no %}"
+                    class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                        View Actuators
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
+
+<!-- TAB 2 -->
+<div id="tab2" class="tab-content hidden">
+    <h3 class="text-xl font-bold mb-3">Completed Orders</h3>
+
+    <input
+        type="text"
+        id="searchCompleted"
+        placeholder="Search completed orders..."
+        class="mb-3 w-full p-2 border rounded"
+    />
+
+    <table id="tableCompleted" class="min-w-full text-sm border border-gray-300">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="p-3 border">Order No</th>
+                <th class="p-3 border">Customer</th>
+                <th class="p-3 border">Qty</th>
+                <th class="p-3 border">Heat Report</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for o in completed_orders %}
+    <tr class="hover:bg-gray-50">
+        <td class="p-3 border">{{ o.order_no }}</td>
+        <td class="p-3 border">{{ o.customer }}</td>
+        <td class="p-3 border">{{ o.order_qty }}</td>
+
+        <!-- NEW BUTTON COLUMN -->
+        <td class="p-3 border text-center">
+            <a href="{% url 'generate_heat_report' o.order_no %}"
+               class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                Generate Heat Report
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+    </table>
+</div>
+
+</div>
+
+<!-- JS -->
+<script>
+// TAB SWITCHING FIX
+document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
+
+        document.querySelectorAll(".tab-btn").forEach(x => {
+            x.classList.remove("text-blue-600", "border-blue-600");
+            x.classList.add("text-gray-600");
+        });
+
+        this.classList.add("text-blue-600", "border-b-2", "border-blue-600");
+
+        document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+        document.getElementById(this.dataset.tab).classList.remove("hidden");
+    });
+});
+
+// COLUMN FILTERS
+document.querySelectorAll(".filter-input").forEach(input => {
+    input.addEventListener("input", function () {
+        const col = this.dataset.col;
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#tableUnderAssembly tbody tr");
+
+        rows.forEach(row => {
+            const cellText = row.children[col].innerText.toLowerCase();
+            row.style.display = cellText.includes(filter) ? "" : "none";
+        });
+    });
+});
+
+// Completed Order Search
+document.getElementById("searchCompleted").addEventListener("input", function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#tableCompleted tbody tr");
+
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+    });
+});
+</script>
+
 {% endblock %}
