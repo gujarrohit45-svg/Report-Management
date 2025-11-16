@@ -106,212 +106,132 @@
 
         <input type="hidden" id="actuator_data" name="actuator_data">
         <div class="mt-4">
-            <button id="submit-btn" disabled class="bg-green-500 text-white px-6 py-2 rounded opacity-50">Save Actuator Data</button>
+            <button id="submit-btn" class="bg-green-500 text-white px-6 py-2 rounded opacity-50">Save Actuator Data</button>
             <button id="clear-btn" type="button" class="ml-2 bg-gray-300 text-black px-4 py-2 rounded">Clear</button>
         </div>
     </form>
 </div>
 
-<script src="https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js"></script>
+<script type="module">
+    import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Worker path (required by qr-scanner)
-    QrScanner.WORKER_PATH = 'https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js';
+    QrScanner.WORKER_PATH = "https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
 
-    const video = document.getElementById("qr-video");
-    const startBtn = document.getElementById("start-scan");
-    const stopBtn = document.getElementById("stop-scan");
-    const status = document.getElementById("scan-status");
-    const actuatorDataInput = document.getElementById("actuator_data");
-    const submitBtn = document.getElementById("submit-btn");
-    const clearBtn = document.getElementById("clear-btn");
+    // Your full JS code here...
+</script>
 
-    const fields = [
-        "sales_order_no","line_item","order_no","customer","series","type",
-        "size","cylinder_size","spring_size","moc","item_code","order_qty",
-        "creation_date","branch"
-    ];
 
-    let qrScanner = null;
- 
-    // enable submit when form changed (manual or from QR)
-    function enableSubmitIfValid() {
-        // we require order_no and sales_order_no minimally
-        const orderNo = document.getElementById("order_no").value.trim();
-        const sales = document.getElementById("sales_order_no").value.trim();
+<script type="module">
+    import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+    QrScanner.WORKER_PATH = "https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
 
-        if (orderNo && sales) {
-            submitBtn.disabled = false;
-            submitBtn.classList.remove("opacity-50");
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.classList.add("opacity-50");
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const video = document.getElementById("qr-video");
+        const startBtn = document.getElementById("start-scan");
+        const stopBtn = document.getElementById("stop-scan");
+        const status = document.getElementById("scan-status");
+        const actuatorDataInput = document.getElementById("actuator_data");
+
+        const fields = [
+            "sales_order_no","line_item","order_no","customer","series","type",
+            "size","cylinder_size","spring_size","moc","item_code","order_qty",
+            "creation_date","branch"
+        ];
+
+        let qrScanner = null;
+
+        function enableSubmit() {
+            const o = document.getElementById("order_no").value.trim();
+            const s = document.getElementById("sales_order_no").value.trim();
+            const b = document.getElementById("submit-btn");
+
+            if (o && s) {
+                b.disabled = false;
+                b.classList.remove("opacity-50");
+            } else {
+                b.disabled = true;
+                b.classList.add("opacity-50");
+            }
         }
-    }
 
-    // attach change listeners for manual edits
-    // This now works all the time
-    fields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener("input", () => {
-                // build hidden json from fields so server receives data when submitting
-                const d = {};
-                fields.forEach(fid => { d[fid] = document.getElementById(fid).value || "" });
-                actuatorDataInput.value = JSON.stringify(d);
-                enableSubmitIfValid();
+        // Fill form fields
+        function fillForm(data) {
+            fields.forEach(key => {
+                const el = document.getElementById(key);
+                if (el && data[key] !== undefined) el.value = data[key];
             });
         }
-    });
 
-    clearBtn.addEventListener("click", () => {
+        // Each field updates hidden JSON
         fields.forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.value = "";
+            if (!el) return;
+            el.addEventListener("input", () => {
+                const d = {};
+                fields.forEach(f => d[f] = document.getElementById(f).value || "");
+                actuatorDataInput.value = JSON.stringify(d);
+                enableSubmit();
+            });
         });
-        actuatorDataInput.value = "";
-        enableSubmitIfValid();
-        status.textContent = "Form cleared.";
-        // Also reset scanner buttons if scanner was stopped
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-    });
 
-    // Start scanning
-    startBtn.addEventListener("click", async () => {
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        status.textContent = "Starting scanner...";
+        // Start scanner
+        startBtn.addEventListener("click", async () => {
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            status.textContent = "Starting scanner...";
 
-        // If already created, destroy and recreate to avoid multiple instances
-        if (qrScanner) {
-            try { qrScanner.stop(); qrScanner.destroy(); } catch(e){}
-            qrScanner = null;
-        }
+            if (qrScanner) try { qrScanner.stop(); qrScanner.destroy(); } catch {}
 
-        // *** FIXED LOGIC: Initialize QrScanner first ***
-        qrScanner = new QrScanner(
-            video,
-            result => {
-                // Called when a QR code is detected.
-                try {
-                    // sometimes libraries return an object with data
-                    const text = (typeof result === "string") ? result : (result.data || result);
-                    let dataObj = null;
+            qrScanner = new QrScanner(
+                video,
+                result => {
                     try {
-                        dataObj = JSON.parse(text);
-                    } catch (jsonErr) {
-                        // Not JSON - ignore but show content
-                        status.textContent = "QR detected, but payload is not JSON.";
-                        return;
+                        const text = typeof result === "string" ? result : result.data;
+                        const json = JSON.parse(text);
+
+                        fillForm(json);
+                        actuatorDataInput.value = JSON.stringify(json);
+                        enableSubmit();
+
+                        status.textContent = "QR scanned successfully!";
+
+                        qrScanner.stop();
+                        qrScanner.destroy();
+                        qrScanner = null;
+
+                        startBtn.disabled = false;
+                        stopBtn.disabled = true;
+
+                    } catch {
+                        status.textContent = "Invalid QR — expected JSON.";
                     }
-
-                    fillForm(dataObj);
-                    actuatorDataInput.value = JSON.stringify(dataObj);
-                    enableSubmitIfValid(); // This is still needed!
-
-                    status.textContent = "QR scanned successfully!";
-                    // stop after successful scan
-                    try { qrScanner.stop(); qrScanner.destroy(); } catch(e){}
-                    qrScanner = null;
-                    startBtn.disabled = false;
-                    stopBtn.disabled = true;
-                } catch (e) {
-                    console.error("Scan handler error:", e);
-                    status.textContent = "Error processing QR.";
                 }
-            },
-            {
-                // options
-                returnDetailedScanResult: false,
-                highlightScanRegion: true,
-                preferredCamera: 'environment', // Ask for back camera
-            }
-        );
+            );
 
-        // *** FIXED LOGIC: Start scanner and catch errors directly ***
-        try {
-            await qrScanner.start();
-            status.textContent = "Scanning... (point camera at the QR)";
-        } catch (e) {
-            console.error("Scanner start error:", e);
-            // This will now catch "no camera" errors
-            status.textContent = "Failed to start scanner. (No camera found or permission denied)";
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            if (qrScanner) {
-                try { qrScanner.destroy(); } catch (e) {}
-                qrScanner = null;
-            }
-        }
-    });
-
-    // Stop scanning
-    stopBtn.addEventListener("click", () => {
-        if (qrScanner) {
             try {
+                await qrScanner.start();
+                status.textContent = "Scanning...";
+            } catch (err) {
+                status.textContent = "Camera not available";
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        });
+
+        // Stop scanner
+        stopBtn.addEventListener("click", () => {
+            if (qrScanner) {
                 qrScanner.stop();
                 qrScanner.destroy();
-            } catch(e){
-                console.warn("Scanner cleanup failed", e);
+                qrScanner = null;
             }
-            qrScanner = null;
-        }
-
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-        status.textContent = "Scanner stopped.";
-    });
-
-    // fill form helper
-    function fillForm(d) {
-        // Support different key naming (snake_case or spaces)
-        function v(key) {
-            if (d[key] !== undefined) return d[key];
-            // fallback variants
-            const alt = key.replace("_", " ");
-            if (d[alt] !== undefined) return d[alt];
-            const alt2 = key.replace("_", "");
-            if (d[alt2] !== undefined) return d[alt2];
-            return "";
-        }
-
-        const mapping = {
-            sales_order_no: v("sales_order_no"),
-            order_no: v("order_no"),
-            order_qty: v("order_qty"),
-            line_item: v("line_item"),
-            series: v("series"),
-            type: v("type"),
-            size: v("size"),
-            cylinder_size: v("cylinder_size") || v("cylinder size"),
-            spring_size: v("spring_size") || v("spring size"),
-            moc: v("moc"),
-            customer: v("customer"),
-            item_code: v("item_code"),
-            creation_date: v("creation_date"),
-            branch: v("branch")
-        };
-
-        Object.keys(mapping).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.value = mapping[id] || "";
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            status.textContent = "Scanner stopped.";
         });
-    }
-
-    // On form submit, ensure hidden actuator_data is set (if manual mode or fields edited)
-    document.getElementById("actuator-form").addEventListener("submit", (ev) => {
-        // Build object from fields (overwrite hidden if present)
-        const d = {};
-        fields.forEach(fid => {
-            d[fid] = document.getElementById(fid).value || "";
-        });
-        actuatorDataInput.value = JSON.stringify(d);
-        // allow submission to continue to server
     });
-
-});
 </script>
+
 
 {% endblock %}
