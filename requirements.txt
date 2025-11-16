@@ -2,3 +2,4 @@ Django==5.0.3
 psycopg2-binary
 django-tailwind
 reportlab==3.6.12
+python-decouple
